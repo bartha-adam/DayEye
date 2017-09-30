@@ -118,7 +118,7 @@ let faceApi = function (config) {
       .then(function (response) {
         console.log(response)
         if (response.status == 'succeeded' || response.status == 'failed')
-          clearInterval(trainingProcess)
+          stopTraining();
       },
       function (reject) {
         console.log(reject)
