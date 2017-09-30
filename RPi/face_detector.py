@@ -7,6 +7,8 @@ import paho.mqtt.client as mqtt
 import json
 
 rundetection = True
+topic_in  = "dayeye/face/in"
+topic_out = "dayeye/face/out"
 
 # Setup the camera
 camera = PiCamera()
@@ -31,8 +33,7 @@ cmd_startdetection = "start_detection"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe(topic)
-    #client.publish(topic, "FaceDetector module connected");
+    client.subscribe(topic_in)
     send_debug_message("FaceDetector module connected")
 
 
@@ -66,16 +67,15 @@ def send_debug_message(msg):
 	data[cmd_type] = cmd_debug
 	data[cmd_debug_msg] = msg
 	json_data = json.dumps(data)
-	client.publish(topic, json_data)
+	client.publish(topic_out, json_data)
 	
 def send_face_detected():
 	data = {}
 	data[cmd_type] = cmd_facedetected
 	json_data = json.dumps(data)
-	client.publish(topic, json_data)
+	client.publish(topic_out, json_data)
 
 # Setup MQTT
-topic = "DayEye"
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
