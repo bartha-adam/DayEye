@@ -1,0 +1,6 @@
+{
+  "port":3000,
+  "websocket":3001,
+  "mjpgStreamUri":"http://localhost:8080/?action=stream",
+  "faceApiKey":"youtfaceapikey"
+}

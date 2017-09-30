@@ -1,0 +1,19 @@
+{
+  "name": "facerecognition",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
+    "mjpeg-camera": "^1.7.2",
+    "project-oxford": "^1.8.0",
+    "request": "^2.83.0",
+    "ws": "^3.2.0"
+  }
+}
