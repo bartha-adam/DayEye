@@ -1,5 +1,11 @@
 const oxford = require('project-oxford');
+let mqtt = require('mqtt')
 
+var client  = mqtt.connect({host:'172.24.10.92',port: 1883})
+
+client.on('connect', function () {
+  console.log("connected to mqtt")
+})
 
 let faceApi = function (config) {
   let module = this;
@@ -16,7 +22,7 @@ let faceApi = function (config) {
 
   let registration;
   let training;
-
+  let detectedFace = false;
   module.config = config;
 
   init();
@@ -82,6 +88,7 @@ let faceApi = function (config) {
   }
 
   function startTraining() {
+    detectedFace = false;
     console.log("start training for "+currentGroupId+" person: "+currentPersonId);
     isTraining = true;
 
@@ -103,7 +110,7 @@ let faceApi = function (config) {
     apiClient.face.personGroup.trainingStatus(currentGroupId)
       .then(function (response) {
         console.log(response)
-        if (response.status == 'succeeded')
+        if (response.status == 'succeeded' || response.status == 'failed')
           clearInterval(trainingProcess)
       },
       function (reject) {
@@ -119,7 +126,7 @@ let faceApi = function (config) {
 
   function sendFrames() {
     console.log("send frame");
-    if (trainingFrameCount >= 5) {
+    if (trainingFrameCount >= 10) {
       trainingFrameCount = 0;
       isSendingFrames = false;
       console.log("stop sending frames. Start training group")
@@ -133,13 +140,32 @@ let faceApi = function (config) {
     else {
       trainingFrameCount++;
       detect().then(function (response) {
+        console.log(response.length)
+        if (response.length == 0) {
+          client.publish( "dayeye/t2s/in",JSON.stringify({
+            cmd: "say",
+            text: "Can't see your face you douche"
+          }))
+          return;
+        }
         if (response[0].faceRectangle) {
+          if (detectedFace == false) {
+            client.publish( "dayeye/t2s/in",JSON.stringify({
+              cmd: "say",
+              text: "Hi there handsome! Stay still!"
+            }))
+            detectedFace = true;
+          }
           addFace(currentGroupId, currentPersonId, currentFrame, response[0].faceRectangle);
         }
       },
       function (reject) {
         console.log("face detect reject")
         console.log(reject);
+        client.publish( "dayeye/t2s/in",JSON.stringify({
+          cmd: "say",
+          text: "Something is wrong with my eyes"
+        }))
       });
     }
   }
