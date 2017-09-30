@@ -38,6 +38,7 @@ cmd_persondetected = "person_detected"
 cmd_persondetected_id = "id"
 cmd_stopdetection = "stop_detection"
 cmd_startdetection = "start_detection"
+cmd_unknown_person = "unknown_person"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -90,6 +91,12 @@ def notify_person_detected(personId):
 	json_data = json.dumps(data)
 	client.publish(topic_out, json_data)
 
+def notify_unknown_person():
+	data = {}
+	data[cmd_type] = cmd_unknown_person
+	json_data = json.dumps(data)
+	client.publish(topic_out, json_data)
+
 def identify_person(frame):
 	print "saving image"
 	# Ugly workaround but it's fast: save the jpg to ram, then FaceAPI binding reads from RAM
@@ -115,6 +122,7 @@ def identify_person(frame):
 		candidates = identify_result[0]['candidates']
 		if len(candidates) == 0:
 			print "FaceAPI did not found any candidates"
+			notify_unknown_person()
 			return
 		
 		candidate = candidates[0]
