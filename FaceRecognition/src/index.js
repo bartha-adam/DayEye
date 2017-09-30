@@ -110,6 +110,14 @@ app.get('/test', function (req, res){
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({status:"success"}));
 })
+.get('/group/create', function(req, res) {
+  const group = req.query.group;
+
+  faceApi.createGroup(group);
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({status:"success"}));
+})
+
 
 //Start server on specified port
 app.listen(config.port, function () {
