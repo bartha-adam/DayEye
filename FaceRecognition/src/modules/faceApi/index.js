@@ -88,6 +88,7 @@ let faceApi = function (config) {
   }
 
   function startTraining() {
+    startMjpgStreamer();
     detectedFace = false;
     console.log("start training for "+currentGroupId+" person: "+currentPersonId);
     isTraining = true;
@@ -118,9 +119,55 @@ let faceApi = function (config) {
       });
   }
 
+  function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+  }
+
   function stopTraining() {
     clearInterval(trainingProcess)
     isTraining = false;
+    killMjpgStreamer();
+
+    //start face detection
+    //"stop_detection"
+
+  }
+  var spawn = require('child_process').spawn;
+  var mjpgStreamerProcess;
+  function startMjpgStreamer() {
+    client.publish( "dayeye/face/in",JSON.stringify({
+      cmd: "stop_detection"
+    }))
+
+    delay(500);
+
+    mjpgStreamerProcess = spawn("mjpg_streamer", ["-i", "input_raspicam.so"]);
+
+    mjpgStreamerProcess.stdout.on('data', function (data) {
+      console.log(data);
+    });
+
+    mjpgStreamerProcess.stderr.on('data', function (data) {
+      console.log(data);
+    });
+
+    mjpgStreamerProcess.on('close', function (data) {
+      console.log(data);
+    });
+  }
+
+  function killMjpgStreamer() {
+    //"start_detection"
+    if (mjpgStreamerProcess) {
+      mjpgStreamerProcess.kill();
+
+      delay(500);
+      
+      client.publish( "dayeye/face/in",JSON.stringify({
+        cmd: "start_detection"
+      }))
+    }
 
   }
 
