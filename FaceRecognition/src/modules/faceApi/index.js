@@ -136,11 +136,12 @@ let faceApi = function (config) {
   var spawn = require('child_process').spawn;
   var mjpgStreamerProcess;
   function startMjpgStreamer() {
-    client.publish( "dayeye/face/in",JSON.stringify({
+    console.log("start streamer")
+    client.publish("dayeye/face/in",JSON.stringify({
       cmd: "stop_detection"
     }))
 
-  //  sleep(500);
+    sleep(500);
 
     mjpgStreamerProcess = spawn("mjpg_streamer", ["-i", "input_raspicam.so"]);
     console.log(mjpgStreamerProcess);
@@ -163,7 +164,7 @@ let faceApi = function (config) {
     if (mjpgStreamerProcess) {
       mjpgStreamerProcess.kill();
 
-      //sleep(500);
+      sleep(500);
 
       client.publish( "dayeye/face/in",JSON.stringify({
         cmd: "start_detection"
