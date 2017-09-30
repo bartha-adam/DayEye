@@ -1,37 +1,14 @@
-###############################################################################
-#                                                                             #
-# file:    1_single_core.py                                                   #
-#                                                                             #
-# authors: Andre Heil  - avh34                                                #
-#          Jingyao Ren - jr386                                                #
-#                                                                             #
-# date:    December 1st 2015                                                  #
-#                                                                             #
-# brief:   This is the simple face-tracking program. It uses a single core to #
-#          process the images taken by the Pi Camera and processes them using #
-#          OpenCV. It then uses ServoBlaster to move the servos so that your  #
-#          face is centered.                                                  #
-#                                                                             #
-###############################################################################
-
-
-### Imports ###################################################################
-
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
 import os
+import paho.mqtt.client as mqtt
+import json
 
-
-### Setup #####################################################################
-
-# Center coordinates
-cx = 160
-cy = 120
-
-xdeg = 150
-ydeg = 150
+rundetection = True
+topic_in  = "dayeye/face/in"
+topic_out = "dayeye/face/out"
 
 # Setup the camera
 camera = PiCamera()
@@ -41,25 +18,87 @@ rawCapture = PiRGBArray( camera, size=( 320, 240 ) )
 
 # Load a cascade file for detecting faces
 face_cascade = cv2.CascadeClassifier( 'lbpcascade_frontalface_improved.xml' )
-
 #face_cascade = cv2.CascadeClassifier( 'lbpcascade_frontalface.xml' ) 
 
 t_start = time.time()
 fps = 0
+
+# MQTT handlers
+cmd_type = "cmd_type"
+cmd_debug = "debug"
+cmd_debug_msg = "msg"
+cmd_facedetected = "face_detected"
+cmd_stopdetection = "stop_detection"
+cmd_startdetection = "start_detection"
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
+    client.subscribe(topic_in)
+    send_debug_message("FaceDetector module connected")
+
+
+def on_message(client, userdata, msg):
+	print("Received msg:" + str(msg.payload))
+	try:
+		jsonMsg = json.loads(msg.payload)
+		cmdType = jsonMsg[cmd_type]
+		
+		if cmdType == cmd_stopdetection:
+			handleStopDetection()
+		elif cmdType == cmd_startdetection:
+			handleStartDetection()
+		else:
+			print("Unknown command")
+	except ValueError:
+		print "ERROR: Unexpected values...."
+
+def handleStopDetection():
+	global rundetection
+	print("Stopping detection")
+	rundetection = False
+    
+def handleStartDetection():
+	global rundetection
+	print("Starting detection")
+	rundetection = True
+
+def send_debug_message(msg):
+	data = {}
+	data[cmd_type] = cmd_debug
+	data[cmd_debug_msg] = msg
+	json_data = json.dumps(data)
+	client.publish(topic_out, json_data)
+	
+def send_face_detected():
+	data = {}
+	data[cmd_type] = cmd_facedetected
+	json_data = json.dumps(data)
+	client.publish(topic_out, json_data)
+
+# Setup MQTT
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect("localhost", 1883, 60)
+client.loop_start() 
+
 
 
 ### Main ######################################################################
 
 # Capture frames from the camera
 for frame in camera.capture_continuous( rawCapture, format="bgr", use_video_port=True ):
-    
+    if rundetection == False:
+		time.sleep(1)
+		rawCapture.truncate( 0 )
+		continue
+		
     image = frame.array
-    
-    # Use the cascade file we loaded to detect faces
     gray = cv2.cvtColor( image, cv2.COLOR_BGR2GRAY )
     faces = face_cascade.detectMultiScale( gray )
     
-    print "Found " + str( len( faces ) ) + " face(s)"
+    if len(faces) > 0:
+		send_face_detected()
     
     # Draw a rectangle around every face and move the motor towards the face
     for ( x, y, w, h ) in faces:
@@ -74,9 +113,8 @@ for frame in camera.capture_continuous( rawCapture, format="bgr", use_video_port
     fps = fps + 1
     sfps = fps / ( time.time() - t_start )
     cv2.putText( image, "FPS : " + str( int( sfps ) ), ( 10, 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, ( 0, 0, 255 ), 2 )    
-    print "FPS : " + str( int( sfps ) )
+    print "FPS: " + str( int( sfps ) ) + " FaceCnt: " + str(len(faces))
     
-    # Show the frame
     cv2.imshow( "Frame", image )
     
     cv2.waitKey( 1 )
