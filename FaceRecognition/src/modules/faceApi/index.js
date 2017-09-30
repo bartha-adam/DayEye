@@ -2,7 +2,7 @@ const oxford = require('project-oxford');
 let mqtt = require('mqtt')
 
 // mjpgCamera
-const mjpgCamera = require('./modules/mjpgCamera')
+const mjpgCamera = require('../mjpgCamera')
 
 //mjpgCamera.start();
 
