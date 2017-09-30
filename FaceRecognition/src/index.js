@@ -17,8 +17,7 @@ const bodyParser= require('body-parser')
 const config = require('./config.json')
 
 // face Api
-const faceApi = require('./modules/faceApi')
-faceApi.init({faceApiKey:config.faceApiKey,socketCallback: socketCallback});
+const faceApi = require('./modules/faceApi')(config);
 
 // create Macadamian groupName
 faceApi.createGroup('macadamian');
@@ -106,6 +105,13 @@ app.get('/test', function (req, res){
 
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({status:"startedTraining"}));
+})
+.get('/group/delete', function(req, res) {
+  const group = req.query.group;
+
+  faceApi.deleteGroup(group);
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({status:"success"}));
 })
 
 //Start server on specified port

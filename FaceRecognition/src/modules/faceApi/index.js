@@ -1,9 +1,8 @@
 const oxford = require('project-oxford');
 
-let faceApi = function () {
+
+let faceApi = function (config) {
   let module = this;
-  const faceDetectUri = "https://westus.api.cognitive.microsoft.com/face/v1.0/detect";
-  const subscriptionKey = "0118754ef3d3423a91a28c21fab6e342";
   let socketCallback;
   let apiClient;
   let currentFrame;
@@ -15,9 +14,18 @@ let faceApi = function () {
   let currentPersonId;
   let trainingFrameCount = 0;
 
-  function init(config) {
-    apiClient = new oxford.Client(config.faceApiKey);
-    socketCallback = config.socketCallback;
+  let registration;
+  let training;
+
+  module.config = config;
+
+  init();
+
+  function init() {
+    apiClient = new oxford.Client(module.config.faceApiKey);
+
+    group = require('./group')(apiClient);
+    training = require('./training')(apiClient);
   }
 
   function onMjpgStream(frame) {
@@ -27,27 +35,8 @@ let faceApi = function () {
 
   }
 
-  function addGroup(groupName) {
-    console.log("creating group "+groupName);
-    apiClient.face.personGroup
-      .create(groupName, groupName)
-      .then(function (response) {
-        console.log(response);
-      },
-      function (reject) {
-          console.log(reject);
-      });
-  }
-
   function createGroup(groupName) {
-    apiClient.face.personGroup.get(groupName)
-      .then(function(response) {
-        console.log(response);
-      }, function (reject) {
-        // no group existent with this name. Create one.
-        console.log(reject)
-        addGroup(groupName);
-      });
+    group.createGroup(groupName);
   }
 
   function register(personGroup, email) {
@@ -114,6 +103,8 @@ let faceApi = function () {
     apiClient.face.personGroup.trainingStatus(currentGroupId)
       .then(function (response) {
         console.log(response)
+        if (response.status == 'succeeded')
+          clearInterval(trainingProcess)
       },
       function (reject) {
         console.log(reject)
@@ -188,14 +179,22 @@ let faceApi = function () {
     return apiClient.face.person.get(groupId, personId);
   }
 
+  function logObject(object) {
+    return JSON.stringify(object);
+  }
+
+  function deleteGroup(groupName) {
+    group.deleteGroup(groupName);
+  }
+
   return {
-    init,
     createGroup,
     onMjpgStream,
     register,
     isTrainingGroup,
-    getPersonInfo
+    getPersonInfo,
+    deleteGroup
   }
-}();
+};
 
 module.exports = faceApi;
