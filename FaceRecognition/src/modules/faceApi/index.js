@@ -1,6 +1,11 @@
 const oxford = require('project-oxford');
 let mqtt = require('mqtt')
 
+// mjpgCamera
+const mjpgCamera = require('./modules/mjpgCamera')
+
+//mjpgCamera.start();
+
 var client  = mqtt.connect({host:'172.24.10.92',port: 1883})
 
 client.on('connect', function () {
@@ -32,6 +37,7 @@ let faceApi = function (config) {
 
     group = require('./group')(apiClient);
     training = require('./training')(apiClient);
+    mjpgCamera.init({uri:module.config.mjpgStreamUri, streamCallback:onMjpgStream, interval:1})
   }
 
   function onMjpgStream(frame) {
@@ -129,9 +135,6 @@ let faceApi = function (config) {
     isTraining = false;
     killMjpgStreamer();
 
-    //start face detection
-    //"stop_detection"
-
   }
   var spawn = require('child_process').spawn;
   var mjpgStreamerProcess;
@@ -156,6 +159,8 @@ let faceApi = function (config) {
     mjpgStreamerProcess.on('close', function (data) {
       console.log(data);
     });
+
+      mjpgCamera.start();
   }
 
   function killMjpgStreamer() {
@@ -169,6 +174,7 @@ let faceApi = function (config) {
       client.publish( "dayeye/face/in",JSON.stringify({
         cmd: "start_detection"
       }))
+        mjpgCamera.stop();
     }
 
   }

@@ -22,10 +22,7 @@ const faceApi = require('./modules/faceApi')(config);
 // create Macadamian groupName
 faceApi.createGroup('macadamian');
 
-// mjpgCamera
-const mjpgCamera = require('./modules/mjpgCamera')
-mjpgCamera.init({uri:config.mjpgStreamUri, streamCallback:faceApi.onMjpgStream, interval:1})
-mjpgCamera.start();
+
 
 // configure express app
 app.use(bodyParser.json()); // for parsing application/json
