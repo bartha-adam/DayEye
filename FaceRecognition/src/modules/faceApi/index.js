@@ -52,6 +52,7 @@ let faceApi = function (config) {
   }
 
   function register(personGroup, email) {
+    startMjpgStreamer();
     currentGroupId = personGroup;
     if (isTraining || isSendingFrames)
       return;
@@ -94,7 +95,6 @@ let faceApi = function (config) {
   }
 
   function startTraining() {
-    startMjpgStreamer();
     detectedFace = false;
     console.log("start training for "+currentGroupId+" person: "+currentPersonId);
     isTraining = true;
