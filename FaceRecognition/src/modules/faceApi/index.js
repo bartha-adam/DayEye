@@ -143,7 +143,7 @@ let faceApi = function (config) {
     sleep(500);
 
     mjpgStreamerProcess = spawn("mjpg_streamer", ["-i", "input_raspicam.so"]);
-
+    console.log(mjpgStreamerProcess);
     mjpgStreamerProcess.stdout.on('data', function (data) {
       console.log(data);
     });
@@ -158,6 +158,7 @@ let faceApi = function (config) {
   }
 
   function killMjpgStreamer() {
+    console.log("kill mjpg streamer")
     //"start_detection"
     if (mjpgStreamerProcess) {
       mjpgStreamerProcess.kill();
@@ -186,7 +187,12 @@ let faceApi = function (config) {
     }
     else {
       trainingFrameCount++;
-      detect().then(function (response) {
+      var detectFunc = detect();
+
+      if (!detectFunc)
+        return;
+
+      detectFunc.then(function (response) {
         console.log(response.length)
         if (response.length == 0) {
           client.publish( "dayeye/t2s/in",JSON.stringify({
@@ -238,6 +244,11 @@ let faceApi = function (config) {
   }
 
   function detect() {
+    if (!currentFrame)
+    {
+      console.log("no frame")
+      return;
+    }
     return apiClient.face.detect({
       data: currentFrame,
       analyzesAge: true,
