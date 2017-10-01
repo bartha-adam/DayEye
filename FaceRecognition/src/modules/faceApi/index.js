@@ -38,6 +38,7 @@ let faceApi = function (config) {
     group = require('./group')(apiClient);
     training = require('./training')(apiClient);
     mjpgCamera.init({uri:module.config.mjpgStreamUri, streamCallback:onMjpgStream, interval:1})
+    mjpgCamera.start();
   }
 
   function onMjpgStream(frame) {
