@@ -139,7 +139,7 @@ let faceApi = function (config) {
   var spawn = require('child_process').spawn;
   var mjpgStreamerProcess;
   function startMjpgStreamer() {
-    console.log("start streamer")
+    /*console.log("start streamer")
     client.publish("dayeye/face/in",JSON.stringify({
       cmd: "stop_detection"
     }))
@@ -164,11 +164,11 @@ let faceApi = function (config) {
     });
     sleep(200);
       mjpgCamera.start();
-    sleep(500);
+    sleep(500);*/
   }
 
   function killMjpgStreamer() {
-    console.log("kill mjpg streamer")
+    /*console.log("kill mjpg streamer")
     //"start_detection"
     if (mjpgStreamerProcess) {
       mjpgStreamerProcess.kill();
@@ -179,7 +179,7 @@ let faceApi = function (config) {
         cmd: "start_detection"
       }))
         mjpgCamera.stop();
-    }
+    }*/
 
   }
 
