@@ -149,18 +149,22 @@ let faceApi = function (config) {
     mjpgStreamerProcess = spawn("mjpg_streamer", ["-i", "input_raspicam.so"]);
     console.log(mjpgStreamerProcess);
     mjpgStreamerProcess.stdout.on('data', function (data) {
-      console.log(data);
+      if (data)
+        console.log(data.toString());
     });
 
     mjpgStreamerProcess.stderr.on('data', function (data) {
-      console.log(data);
+      if (data)
+        console.log(data.toString());
     });
 
     mjpgStreamerProcess.on('close', function (data) {
-      console.log(data);
+      if (data)
+        console.log(data.toString());
     });
-
+    sleep(200);
       mjpgCamera.start();
+    sleep(500);
   }
 
   function killMjpgStreamer() {
