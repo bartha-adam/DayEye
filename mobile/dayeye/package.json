@@ -1,0 +1,32 @@
+{
+  "name": "dayeye",
+  "version": "1.1.1",
+  "description": "dayeye: An Ionic project",
+  "devDependencies": {
+    "gulp": "^3.5.6",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^3.1.0"
+  },
+  "cordovaPlugins": [
+    "cordova-plugin-device",
+    "cordova-plugin-console",
+    "cordova-plugin-whitelist",
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-statusbar",
+    "ionic-plugin-keyboard",
+    {
+      "variables": {
+        "REVERSED_CLIENT_ID": "732334025518-c4n0e2knugu3oapjtvmmb6nvt4tfg7mb.apps.googleusercontent.com"
+      },
+      "locator": "cordova-plugin-googleplus",
+      "id": "cordova-plugin-googleplus"
+    }
+  ],
+  "cordovaPlatforms": [
+    "android"
+  ],
+  "dependencies": {
+    "@ionic-native/google-plus": "^4.3.0"
+  }
+}
