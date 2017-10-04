@@ -1,0 +1,6 @@
+from common import config
+
+BASE_TOPIC_PATH = "dayeye"
+TOPIC_SEPARATOR = "/"
+VIDEO_STREAM_TOPIC = BASE_TOPIC_PATH + TOPIC_SEPARATOR + "capture"
+DEBUG_TOPIC = BASE_TOPIC_PATH + TOPIC_SEPARATOR + "debug"

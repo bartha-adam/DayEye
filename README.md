@@ -3,12 +3,21 @@
 Links:
 https://jireren.github.io/blog/2016/02/27/face-recognition-system-based-on-raspberry-pi-2/
 
+
+
 ## Install:
 sudo apt-get install python-pip
 sudo apt-get install python-dev
+sudo apt-get install mosquitto-clients
+
+## Python depencies
 sudo pip install picamera
 sudo pip install paho-mqtt
-sudo apt-get install mosquitto-clients
+sudo pip install ruamel.yaml
+
+## Run
+before running module, execute the following
+"source setup_pythonpath"
 
 
 ## Text to speach
