@@ -53,4 +53,3 @@ def parse_frame(raw_message):
     # print "Frame end   0x%s" % (binascii.b2a_hex(bytearray(raw_frame[-100:])))
     return (frame_metadata_json, raw_frame)
 
-    

@@ -8,7 +8,7 @@ import os
 
 
 def on_connect(client, userdata, flags, rc):
-    print "Connected with result code %s" %(str(rc))
+    print("Connected with result code %s" % (str(rc)))
     messages.send_debug_message(client, module_name, "connected")
 
 
