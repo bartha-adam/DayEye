@@ -1,10 +1,10 @@
+import paho.mqtt.client as mqtt
+import os
 from common import config
 from common import topics
 from common import messages
 from picamera import PiCamera
 from picamera.array import PiRGBArray
-import paho.mqtt.client as mqtt
-import os
 
 
 def on_connect(client, userdata, flags, rc):
