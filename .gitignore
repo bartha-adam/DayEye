@@ -2,3 +2,5 @@ node_modules
 config.json
 bin
 obj
+*.pyc
+__pycache__
