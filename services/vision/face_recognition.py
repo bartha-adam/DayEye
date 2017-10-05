@@ -1,5 +1,5 @@
 # This module uses OpenCV to detect human faces in the incomming frame
-# In case face is found message is published to DayEye main topic
+# In case face is found message is published to DayEye LOCAL_FACES_TOPIC
 # see messages.compose_frame method for message format
 
 import os
