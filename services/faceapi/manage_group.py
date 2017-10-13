@@ -10,15 +10,19 @@ import json
 import cognitive_face as CF
 import paho.mqtt.client as mqtt
 
+sys.path.append(r"../../")
+from common import config
+from common import topics
+
 # Config
-faceApiEndpoint = "https://westus.api.cognitive.microsoft.com/face/v1.0/"
-faceApiKey = "0118754ef3d3423a91a28c21fab6e342"
+faceApiEndpoint = config.get_config_value(config.CONFIG_FACEAPI_BASEURL) #"https://westus.api.cognitive.microsoft.com/face/v1.0/"
+faceApiKey = config.get_config_value(config.CONFIG_FACEAPI_KEY)
 CF.Key.set(faceApiKey)
 CF.BaseUrl.set(faceApiEndpoint)
 
-mqttBroker = "172.24.10.92"
-mqttPort = 1883
-mqttTopicBase = "group_manager"
+mqttBroker = config.get_config_value(config.CONFIG_MQTT_BROKER)
+mqttPort = config.get_config_value(config.CONFIG_MQTT_PORT)
+mqttTopicBase = topics.FACEAPI_MANAGER_TOPIC
 # Config
 
 # MQTT functions
