@@ -95,10 +95,16 @@ def process_frame(frame, frame_metadata):
 
         print("Person_ids=%s" % (person_ids))
         for person_id in person_ids:
+            # Sample person data:
+            # "data": {"personId": "574972a0-c638-4c0c-936d-85a5a28f7904", "userData": null, "name": "abartha@macadamian.com", "persistedFaceIds": ["249a65e8-c63c-4305-aa49-90306c1f9ca7", "656024b4-9d5c-40ea-b611-1a22e373ddef", "9d92f861-7d70-4d46-ba49-e10229e5c7e6", "d4534754-d8c1-41cd-8bb0-04a2526490e2", "ffac10ef-5586-4303-810e-030acc87eb4b"]}
             person_data = get_person_data(person_id)
             cmd = messages.compose_person_identified(person_data);
             print("Publish %s" % (cmd))
             client.publish(topics.MAIN_TOPIC, cmd)
+
+            # TODO remove this two lines
+            say_cmd = messages.compose_say("Hi %s" % person_data["name"])
+            client.publish("dayeye/t2s/in", say_cmd)
 
         print("Finished processing frame")
         processing_frame = False
