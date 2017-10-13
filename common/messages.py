@@ -86,7 +86,7 @@ def compose_say(text):
     return cmd
 
 
-def parse_person_identified(msg):
+def parse_say(msg):
     json.loads(msg)
     return msg[cmd_say_text]
     
