@@ -10,8 +10,12 @@ cmd_debug = "debug"
 cmd_debug_module = "module"
 cmd_debug_msg = "msg"
 
+cmd_person_identified = "person_identified"
+cmd_person_identified_data = "data"
+
 debug_topic = topics.DEBUG_TOPIC
 video_stream_topic = topics.VIDEO_STREAM_TOPIC
+
 
 def send_debug_message(client, module_name, message):
     data = {}
@@ -21,21 +25,25 @@ def send_debug_message(client, module_name, message):
     json_data = json.dumps(data)
     client.publish(debug_topic, json_data)
 
+
 def publish_frame(client, frame_metadata_json, raw_frame):
     package = compose_frame(frame_metadata_json, raw_frame)
     client.publish(video_stream_topic, package)
+
 
 def compose_frame(frame_metadata_json, raw_frame):
     frame_metadata_str = json.dumps(frame_metadata_json)
     frame_bin_offset = len(frame_metadata_str)
     package_bin_header = pack('h', frame_bin_offset)
     package = package_bin_header + frame_metadata_str + raw_frame
+
     # print "Pacakge len =%d" %(len(package))
     # print "Package hash %s" %(hash(package))
     # print "Package header len = %d" %(len(package_bin_header))
     # print "Frame start 0x%s" % (binascii.b2a_hex(bytearray(raw_frame[0:100])))
     # print "Frame end   0x%s" % (binascii.b2a_hex(bytearray(raw_frame[-100:])))
     return package
+
 
 def parse_frame(raw_message):
     package_bin_header = raw_message[:2]
@@ -52,4 +60,18 @@ def parse_frame(raw_message):
     # print "Frame start 0x%s" % (binascii.b2a_hex(bytearray(raw_frame[0:100])))
     # print "Frame end   0x%s" % (binascii.b2a_hex(bytearray(raw_frame[-100:])))
     return (frame_metadata_json, raw_frame)
+
+
+def compose_person_identified(person_data_json):
+    cmd = {}
+    cmd[cmd_type] = cmd_person
+    cmd[cmd_person_data] = person_data_json
+    json_cmd = json.dumps(cmd)
+    return json_cmd
+
+
+def parse_person_identified(msg):
+    json.loads(msg)
+    return msg[cmd_person_data]
+
 

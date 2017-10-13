@@ -1,12 +1,16 @@
-from struct import *
-from common import config
-from common import topics
-from common import messages
+# This module uses OpenCV to detect human faces in the incomming frame
+# In case face is found message is published to DayEye LOCAL_FACES_TOPIC
+# see messages.compose_frame method for message format
+
 import os
 import cv2
 import numpy as np
 import paho.mqtt.client as mqtt
 import time
+from struct import *
+from common import config
+from common import topics
+from common import messages
 from threading import Thread
 
 processing_frame = False
@@ -44,25 +48,28 @@ def process_frame_message(msg):
 
 def process_frame(frame, frame_metadata):
     global processing_frame
-    frame_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-    faces = face_cascade.detectMultiScale(frame_gray)
+    try:
+        frame_gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        faces = face_cascade.detectMultiScale(frame_gray)
 
-    if len(faces) > 0:
-        print("Found %d faces" % (len(faces)))
-        frame_metadata["Faces"] = []
-        for (x, y, w, h) in faces:
-            center_x = x + w / 2
-            center_y = y + h / 2
-            face_metadata = {"posisition": {"x": center_x, "y": center_y}}
-            print("Face metadata %s" % face_metadata)
-            frame_metadata["Faces"].append(face_metadata)
-            cv2.rectangle(frame_gray, (x, y), (x + w, y + h), (100, 255, 100), 2 )
-            cv2.putText(frame_gray, "Face No." + str(len(faces)), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-            
-        handle_face_detected(frame, frame_metadata)
-        cv2.imwrite("/tmp/frame.jpg", frame_gray);
-    
-    print("Finished processing frame")
+        if len(faces) > 0:
+            print("Found %d faces" % (len(faces)))
+            frame_metadata["Faces"] = []
+            for (x, y, w, h) in faces:
+                center_x = x + w / 2
+                center_y = y + h / 2
+                face_metadata = {"posisition": {"x": center_x, "y": center_y}}
+                print("Face metadata %s" % face_metadata)
+                frame_metadata["Faces"].append(face_metadata)
+                cv2.rectangle(frame_gray, (x, y), (x + w, y + h), (100, 255, 100), 2 )
+                cv2.putText(frame_gray, "Face No." + str(len(faces)), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                
+            handle_face_detected(frame, frame_metadata)
+            #cv2.imwrite("/tmp/frame.jpg", frame_gray);
+        print("Finished processing frame")
+    except:
+        e = sys.exc_info()[0]
+        print("Error while processing frame: %s" % e )
     processing_frame = False
 
 
