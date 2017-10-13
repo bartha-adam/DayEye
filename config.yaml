@@ -8,3 +8,6 @@ faceapi:
   key: '0118754ef3d3423a91a28c21fab6e342'
   identity_confidence_threshold: 0.5
   group_name: 'macadamian'
+mqtt:
+  broker: '172.24.10.92'
+  port: 1883
