@@ -5,7 +5,10 @@ from common import topics
 from common import messages
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+import sys
 
+print("Started video capture")
+sys.stdout.flush()
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code %s" % (str(rc)))

@@ -13,6 +13,9 @@ cmd_debug_msg = "msg"
 cmd_person_identified = "person_identified"
 cmd_person_identified_data = "data"
 
+cmd_say = "say"
+cmd_say_text = "text"
+
 debug_topic = topics.DEBUG_TOPIC
 video_stream_topic = topics.VIDEO_STREAM_TOPIC
 
@@ -64,14 +67,29 @@ def parse_frame(raw_message):
 
 def compose_person_identified(person_data_json):
     cmd = {}
-    cmd[cmd_type] = cmd_person
-    cmd[cmd_person_data] = person_data_json
+    cmd[cmd_type] = cmd_person_identified
+    cmd[cmd_person_identified_data] = person_data_json
     json_cmd = json.dumps(cmd)
     return json_cmd
 
 
 def parse_person_identified(msg):
     json.loads(msg)
-    return msg[cmd_person_data]
+    return msg[cmd_person_identified_data]
+
+
+def compose_say(text):
+    json_cmd = {}
+    json_cmd[cmd_type] = cmd_say
+    json_cmd[cmd_say_text] = text
+    cmd = json.dumps(json_cmd)
+    return cmd
+
+
+def parse_say(msg):
+    json.loads(msg)
+    return msg[cmd_say_text]
+    
+
 
 
